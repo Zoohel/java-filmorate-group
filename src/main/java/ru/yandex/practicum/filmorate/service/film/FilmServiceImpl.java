@@ -13,6 +13,7 @@ import ru.yandex.practicum.filmorate.service.user.UserService;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.validator.FilmValidator;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -81,7 +82,7 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
-    public List<Film> getMostPopular(Integer count) {
-        return storage.getMostPopular(count);
+    public List<Film> getMostPopular(Integer count, Integer genreId, Integer date) {
+        return storage.getMostPopular(count, genreId, date);
     }
 }

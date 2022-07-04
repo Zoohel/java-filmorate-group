@@ -6,8 +6,10 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.DublicateFilmException;
 import ru.yandex.practicum.filmorate.exception.FindFilmException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -65,7 +67,35 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getMostPopular(Integer count) {
+    public List<Film> getMostPopular(Integer count, Integer genreId, Integer date) {
+
+        if (genreId == null && date != null) {
+            return films.values().stream()
+                    .filter(f -> f.getReleaseDate().getYear() == date)
+                    .sorted(Comparator.comparingInt(f -> -f.getLikes().size()))
+                    .limit(count).collect(Collectors.toList());
+        }
+
+        if (genreId != null && date == null) {
+            return films.values().stream()
+                    .filter(f -> f.getGenres().stream()
+                            .map(Genre::getId)
+                            .collect(Collectors.toList())
+                            .contains(genreId))
+                    .sorted(Comparator.comparingInt(f -> -f.getLikes().size()))
+                    .limit(count).collect(Collectors.toList());
+        }
+
+        if (genreId != null && date != null) {
+            return films.values().stream()
+                    .filter(f -> f.getGenres().stream()
+                            .map(Genre::getId)
+                            .collect(Collectors.toList())
+                            .contains(genreId))
+                    .filter(f -> f.getReleaseDate().getYear() == date)
+                    .sorted(Comparator.comparingInt(f -> -f.getLikes().size()))
+                    .limit(count).collect(Collectors.toList());
+        }
 
         return films.values().stream().sorted(Comparator.comparingInt(f -> -f.getLikes().size()))
                 .limit(count).collect(Collectors.toList());
